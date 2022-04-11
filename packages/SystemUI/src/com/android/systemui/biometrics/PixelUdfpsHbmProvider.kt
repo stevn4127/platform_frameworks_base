@@ -63,13 +63,6 @@ class PixelUdfpsHbmProvider @Inject constructor(
             return
         }
 
-        // Run the callback and skip enabling if already enabled
-        // (otherwise it may fail, similar to disabling)
-        if (displayHal.getLhbmState()) {
-            onHbmEnabled?.run()
-            return
-        }
-
         // Takes 20-30 ms, so switch to background
         bgExecutor.execute {
             // Request HbmSVManager to lock the refresh rate. On the Pixel 6 Pro (raven), LHBM only
@@ -103,12 +96,6 @@ class PixelUdfpsHbmProvider @Inject constructor(
         if (pendingEnable) {
             pendingEnable = false
             pendingEnableCallback = null
-            return
-        }
-
-        // Also bail out if HBM is already disabled *and* no enable is pending.
-        // This can happen sometimes if the user spams taps on the UDFPS icon.
-        if (!displayHal.getLhbmState()) {
             return
         }
 
